@@ -4,7 +4,7 @@
 // ============================================================
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { Game, fmtTime } from './game/engine.js';
-import { unlockAudio, sfx } from './game/audio.js';
+import { unlockAudio, sfx, isMuted, setMuted } from './game/audio.js';
 import './index.css';
 
 const WEAPON_NAMES = { '🔫': '飞弹', '🪓': '飞斧', '⚡': '落雷' };
@@ -120,9 +120,18 @@ export default function App() {
   const [endStats, setEndStats] = useState(null);
   const [endKind, setEndKind] = useState(null); // over | win
   const [isTouch] = useState(() => 'ontouchstart' in window);
+  const [muted, setMutedState] = useState(() => isMuted());
+
+  const toggleMute = useCallback(() => {
+    const m = !muted;
+    setMuted(m);
+    setMutedState(m);
+    if (!m) sfx.ui(); // 打开声音时给一声反馈
+  }, [muted]);
 
   const startGame = useCallback(() => {
     unlockAudio();
+    sfx.ui();
     const canvas = canvasRef.current;
     if (gameRef.current) gameRef.current.destroy();
     const game = new Game(canvas, {
@@ -153,6 +162,7 @@ export default function App() {
   const togglePause = () => {
     const g = gameRef.current;
     if (!g) return;
+    sfx.ui();
     g.togglePause();
     setScreen(g.paused ? 'paused' : 'playing');
   };
@@ -180,6 +190,9 @@ export default function App() {
       )}
 
       {playing && <Hud hud={hud} />}
+      <button className="mutebtn" onClick={toggleMute} aria-label={muted ? '打开声音' : '静音'}>
+        {muted ? '🔇' : '🔊'}
+      </button>
       {playing && (
         <button className="pausebtn" onClick={togglePause} aria-label="暂停">
           {screen === 'paused' ? '▶' : '⏸'}

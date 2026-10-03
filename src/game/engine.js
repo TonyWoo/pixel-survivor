@@ -72,6 +72,8 @@ export class Game {
     this.paused = false;
     this.over = false;
     this.won = false;
+    this.pickupCombo = 0;   // 宝石连击拾取计数（升调）
+    this.pickupComboT = -10;
     this.camera = { x: 0, y: 0 };
     this.last = 0;
     this.raf = 0;
@@ -144,8 +146,12 @@ export class Game {
   }
 
   pickUpgrade(up) {
+    const newAxe = up.id === 'axe' && !this.player.weapons.axe;
+    const newBolt = up.id === 'bolt' && !this.player.weapons.lightning;
     applyUpgrade(this.player, up);
-    sfx.select();
+    sfx.ui();
+    if (newAxe) sfx.axe();
+    if (newBolt) sfx.lightning();
     this.pendingLevels -= 1;
     if (this.pendingLevels > 0) {
       this.hooks.onLevelUp(rollUpgrades(this.player));
@@ -270,7 +276,7 @@ export class Game {
           x: p.x, y: p.y - 10, vx: Math.cos(a) * 540, vy: Math.sin(a) * 540,
           dmg: p.damage, pierce: p.pierce, life: 1.1,
         });
-        sfx.shoot();
+        sfx.attack();
       } else {
         p.fireTimer = 0.15;
       }
@@ -302,7 +308,7 @@ export class Game {
         li.timer = li.interval;
         const cands = this.enemies.filter((e) => !e.dead).sort((a, b) =>
           dist2(p.x, p.y, a.x, a.y) - dist2(p.x, p.y, b.x, b.y)).slice(0, li.count);
-        if (cands.length) sfx.thunder();
+        if (cands.length) sfx.lightning();
         for (const e of cands) {
           this.strikes.push({ x: e.x, y: e.y, life: 0.28, max: 0.28, seed: Math.random() * 100 });
           this.damageEnemy(e, li.damage);
@@ -408,7 +414,15 @@ export class Game {
         gm.x += ((p.x - gm.x) / d) * pull;
         gm.y += ((p.y - gm.y) / d) * pull;
       }
-      if (d2 < 24 * 24) { gm.got = true; sfx.pickup(); this.gainXp(gm.v); }
+      if (d2 < 24 * 24) {
+        gm.got = true;
+        // 连击拾取：1 秒内连续拾取升调
+        if (this.time - this.pickupComboT < 1.0) this.pickupCombo += 1;
+        else this.pickupCombo = 0;
+        this.pickupComboT = this.time;
+        sfx.pickup(this.pickupCombo);
+        this.gainXp(gm.v);
+      }
     }
     this.gems = this.gems.filter((g) => !g.got);
     for (const c of this.coins) {
