@@ -1,0 +1,225 @@
+/* ============================================================
+   index.css —— 像素幸存者 UI：暗色 + 像素风，HUD 顶部黑条
+   ============================================================ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+  background: #0b0f1a;
+  font-family: "Courier New", ui-monospace, monospace;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.wrap {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  touch-action: none;
+}
+
+.game {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: pixelated;
+}
+
+/* ---- HUD 顶部黑条 ---- */
+.hud {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 54px;
+  background: rgba(8, 10, 16, 0.88);
+  border-bottom: 2px solid #2a3350;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  color: #fff;
+  z-index: 5;
+  pointer-events: none;
+  font-size: 14px;
+}
+
+.hud-left { display: flex; flex-direction: column; gap: 3px; width: 220px; max-width: 34vw; }
+.bar {
+  position: relative;
+  height: 12px;
+  background: #222a3d;
+  border: 1px solid #000;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.bar .fill { height: 100%; transition: width 0.15s; }
+.bar.hp .fill { background: linear-gradient(#ff6b6b, #c0392b); }
+.bar.xp .fill { background: linear-gradient(#38bdf8, #0369a1); }
+.bar span {
+  position: absolute; inset: 0;
+  font-size: 9px; line-height: 12px; text-align: center;
+  color: #fff; text-shadow: 1px 1px 0 #000;
+}
+.weapons { display: flex; gap: 4px; }
+.wslot {
+  width: 22px; height: 22px;
+  background: #1a2238;
+  border: 1px solid #3b4a6b;
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+}
+
+.hud-mid .timer {
+  font-size: 22px; font-weight: bold;
+  letter-spacing: 2px;
+  color: #fde047;
+  text-shadow: 2px 2px 0 #000;
+}
+
+.hud-right { display: flex; gap: 12px; align-items: center; width: 220px; max-width: 34vw; justify-content: flex-end; }
+.hud-right .lvl { color: #a78bfa; font-weight: bold; }
+
+/* ---- 暂停按钮 ---- */
+.pausebtn {
+  position: absolute;
+  right: 12px; bottom: 12px;
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: rgba(20, 26, 44, 0.9);
+  border: 2px solid #3b4a6b;
+  color: #fff; font-size: 22px;
+  z-index: 6;
+  cursor: pointer;
+}
+.pausebtn:active { transform: scale(0.94); }
+
+/* ---- 覆盖层 / 面板 ---- */
+.overlay {
+  position: absolute; inset: 0;
+  background: rgba(5, 8, 15, 0.72);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 10;
+  padding: 16px;
+}
+
+.panel {
+  background: #141a2c;
+  border: 3px solid #3b4a6b;
+  border-radius: 12px;
+  padding: 28px 32px;
+  color: #fff;
+  text-align: center;
+  max-width: 520px;
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.6);
+}
+.panel h1 { font-size: 34px; margin-bottom: 8px; color: #fde047; text-shadow: 3px 3px 0 #000; }
+.panel h2 { font-size: 24px; margin-bottom: 16px; }
+.endsub { color: #9aa8c0; margin-bottom: 18px; font-size: 14px; }
+
+.howto {
+  text-align: left;
+  background: #0d1322;
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  line-height: 1.9;
+  color: #cdd6e4;
+}
+.howto b { color: #fde047; }
+
+.bigbtn {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  font-size: 20px; font-weight: bold;
+  font-family: inherit;
+  background: linear-gradient(#4ade80, #16a34a);
+  color: #06240f;
+  border: none; border-radius: 8px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+.bigbtn:active { transform: scale(0.97); }
+
+.ghostbtn {
+  display: block; width: 100%;
+  margin-top: 10px; padding: 10px;
+  background: transparent;
+  border: 2px solid #3b4a6b;
+  color: #9aa8c0; border-radius: 8px;
+  font-family: inherit; font-size: 15px;
+  cursor: pointer;
+}
+
+/* ---- 升级三选一 ---- */
+.cards { display: flex; flex-direction: column; gap: 10px; }
+.ucard {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 12px;
+  text-align: left;
+  background: #1a2238;
+  border: 2px solid #3b4a6b;
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: #fff;
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform 0.08s, border-color 0.08s;
+}
+.ucard:hover, .ucard:active { border-color: #fde047; transform: scale(1.02); }
+.uicon { grid-row: 1 / 3; font-size: 34px; display: flex; align-items: center; justify-content: center; }
+.uname { font-size: 17px; font-weight: bold; color: #fde047; }
+.ulv { color: #a78bfa; font-size: 13px; }
+.udesc { font-size: 13px; color: #9aa8c0; line-height: 1.5; }
+
+/* ---- 结算 ---- */
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+.stats > div {
+  background: #0d1322; border-radius: 8px; padding: 12px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.stats span { font-size: 12px; color: #9aa8c0; }
+.stats b { font-size: 22px; color: #fff; }
+
+/* ---- 虚拟摇杆 ---- */
+.joyzone {
+  position: absolute;
+  left: 0; bottom: 0;
+  width: 45vw; height: 45vh;
+  z-index: 5;
+}
+.joybase {
+  position: absolute;
+  left: 36px; bottom: 76px;
+  width: 110px; height: 110px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  border: 2px solid rgba(255,255,255,0.25);
+}
+.joyknob {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 48px; height: 48px;
+  margin: -24px 0 0 -24px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.35);
+  border: 2px solid rgba(255,255,255,0.5);
+}
+
+@media (max-width: 640px) {
+  .hud { font-size: 12px; padding: 0 8px; }
+  .hud-mid .timer { font-size: 18px; }
+  .hud-left, .hud-right { width: 32vw; }
+  .panel { padding: 20px; }
+  .panel h1 { font-size: 26px; }
+}
