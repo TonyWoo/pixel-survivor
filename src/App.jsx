@@ -153,6 +153,17 @@ export default function App() {
     return () => gameRef.current?.destroy();
   }, []);
 
+  // 兜底：点屏幕任何地方都尝试唤醒音频（iOS 上开始按钮那一下可能没唤醒）
+  useEffect(() => {
+    const h = () => unlockAudio();
+    window.addEventListener('pointerdown', h, { passive: true });
+    window.addEventListener('touchend', h, { passive: true });
+    return () => {
+      window.removeEventListener('pointerdown', h);
+      window.removeEventListener('touchend', h);
+    };
+  }, []);
+
   const pick = (c) => {
     setChoices(null);
     // 下一帧再恢复，避免 React 状态和引擎暂停时序打架
